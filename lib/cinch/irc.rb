@@ -112,7 +112,9 @@ module Cinch
     # @return [void]
     # @since 2.0.0
     def send_cap_req
-      caps = [:"away-notify", :"multi-prefix", :sasl, :"twitch.tv/tags"] & @network.capabilities
+      caps = %i[away-notify multi-prefix sasl
+                twitch.tv/tags twitch.tv/membership twitch.tv/commands] &
+             @network.capabilities
 
       # InspIRCd doesn't respond to empty REQs, so send an END in that
       # case.
@@ -136,11 +138,13 @@ module Cinch
     def send_login
       send "PASS #{@bot.config.password}" if @bot.config.password
       send "NICK #{@bot.generate_next_nick!}"
-      send "USER #{@bot.config.user} 0 * :#{@bot.config.realname}"
+      # Twitch does not require or accept USER
+      # send "USER #{@bot.config.user} 0 * :#{@bot.config.realname}"
     end
 
     # @api private
     # @return [Thread] the reading thread
+    # @since 2.0.0
     # @since 2.0.0
     def start_reading_thread
       Thread.new do
@@ -213,7 +217,6 @@ module Cinch
         @sasl_remaining_methods = @bot.config.sasl.mechanisms.reverse
         send_cap_ls
         send_login
-        send 'CAP REQ :twitch.tv/membership'
 
         reading_thread = start_reading_thread
         sending_thread = start_sending_thread
