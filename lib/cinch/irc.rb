@@ -213,6 +213,7 @@ module Cinch
         @sasl_remaining_methods = @bot.config.sasl.mechanisms.reverse
         send_cap_ls
         send_login
+        send 'CAP REQ :twitch.tv/membership'
 
         reading_thread = start_reading_thread
         sending_thread = start_sending_thread
