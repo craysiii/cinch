@@ -246,7 +246,7 @@ module Cinch
         end
       end
 
-      if ["PRIVMSG", "NOTICE"].include?(msg.command)
+      if ["PRIVMSG", "NOTICE", "WHISPER"].include?(msg.command)
         events << [:ctcp] if msg.ctcp?
         if msg.channel?
           events << [:channel]
@@ -255,6 +255,10 @@ module Cinch
         end
 
         if msg.command == "PRIVMSG"
+          events << [:message]
+        end
+
+        if msg.command == "WHISPER"
           events << [:message]
         end
 
